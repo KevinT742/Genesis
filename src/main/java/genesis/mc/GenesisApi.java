@@ -2,9 +2,12 @@ package genesis.mc;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
+import genesis.api.item.ItemTemplate;
 import genesis.api.magic.MagicConcentration;
 import genesis.api.magic.MagicTier;
+import genesis.api.material.BlockTemplate;
 import genesis.api.material.MaterialProfile;
 import genesis.api.planet.PlanetDefinition;
 import genesis.core.magic.MagicField;
@@ -13,7 +16,9 @@ import genesis.mc.planet.GenesisPlanets;
 import genesis.mc.world.GenesisChunkGenerator;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 
 /**
@@ -103,6 +108,31 @@ public final class GenesisApi {
      */
     public static Optional<MaterialProfile> materialOf(Block block) {
         return Optional.ofNullable(GenesisBlocks.profileOf(block));
+    }
+
+    /**
+     * Turns a block template into the block properties of Minecraft.
+     *
+     * <p>Everything that can be derived from the material profile is derived here, so a block of
+     * the family behaves the way the block of Minecraft it replaces behaves. A member that adds a
+     * block of its own hands the template to this method and gets the same treatment Genesis
+     * gives its own blocks.
+     *
+     * @param template the template of the block
+     * @return the properties the block has to be registered with
+     */
+    public static UnaryOperator<BlockBehaviour.Properties> blockProperties(BlockTemplate template) {
+        return GenesisBlocks.properties(template);
+    }
+
+    /**
+     * Turns an item template into the item properties of Minecraft.
+     *
+     * @param template the template of the item
+     * @return the properties the item has to be registered with
+     */
+    public static UnaryOperator<Item.Properties> itemProperties(ItemTemplate template) {
+        return GenesisItems.properties(template);
     }
 
     // ---------------------------------------------------------------------
