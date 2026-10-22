@@ -10,9 +10,9 @@ import genesis.mc.world.PlanetPlans;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
  * The server side events of Genesis.
@@ -46,8 +46,10 @@ public final class GenesisEvents {
      * over its edge.
      */
     @SubscribeEvent
-    public void onPlayerTick(PlayerEvent.PlayerTick event) {
-        ServerPlayer player = event.getEntity();
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
         if (player.level() == null || player.connection == null) {
             return;
         }

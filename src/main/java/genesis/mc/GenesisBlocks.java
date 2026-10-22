@@ -1,6 +1,6 @@
 package genesis.mc;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import genesis.Genesis;
 import genesis.api.material.BlockTemplate;
@@ -133,7 +133,7 @@ public final class GenesisBlocks {
      * <p>Every value that can be derived from the material profile is derived here, which is what
      * keeps the behaviour of a block consistent with its material.
      */
-    public static Function<BlockBehaviour.Properties, BlockBehaviour.Properties> properties(BlockTemplate template) {
+    public static UnaryOperator<BlockBehaviour.Properties> properties(BlockTemplate template) {
         return properties -> {
             BlockBehaviour.Properties result = BlockBehaviour.Properties.of()
                     .strength(template.miningHardness(), template.explosionResistance())

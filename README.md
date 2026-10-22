@@ -236,14 +236,14 @@ pwsh -File prep.ps1           # 解包并生成编译类路径
 pwsh -File build-and-test.ps1 # 编译模组并运行自检
 ```
 
-它会编译**全部**源码（包括 Minecraft 适配层），并跑完 97 条断言。
+它会编译**全部**源码（包括 Minecraft 适配层），并跑完 99 条断言。
 `verification/stubs/` 是 NeoForge API 的最小桩件，仅用于离线编译校验，不会进入产物。
 
 ---
 
 ## 六、自检覆盖
 
-`./gradlew :base:selfTest`（或 `verification/build-and-test.ps1`）校验 97 条断言：
+`./gradlew :base:selfTest`（或 `verification/build-and-test.ps1`）校验 99 条断言：
 
 | 分组 | 覆盖内容 |
 |---|---|
@@ -258,8 +258,8 @@ pwsh -File build-and-test.ps1 # 编译模组并运行自检
 | 结构与道路 | 聚落 / 道路 / 遗迹 / 隐秘全部生成；**每个聚落都能经道路抵达**（71/71）；每条道路确实连到它声明的两个聚落 |
 | 确定性 | 同种子 ⇒ 同地形、同聚落 |
 
-最近一次运行：**97 checks / 0 failures / SELF TEST PASSED**
-（66 个源文件、71 个聚落、103 条道路、23 处遗迹、10 处隐秘）
+最近一次运行：**99 checks / 0 failures / SELF TEST PASSED**
+（67 个源文件、71 个聚落、103 条道路、23 处遗迹、10 处隐秘）
 
 ---
 

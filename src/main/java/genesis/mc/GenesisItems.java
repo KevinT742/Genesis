@@ -1,6 +1,6 @@
 package genesis.mc;
 
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import genesis.Genesis;
 import genesis.api.item.ItemCategory;
@@ -107,10 +107,11 @@ public final class GenesisItems {
      * <p>Everything that can be derived from the material profile is derived here, so that an item
      * of the mod family behaves like the item of Minecraft it replaces.
      */
-    public static Consumer<Item.Properties> properties(ItemTemplate template) {
+    public static UnaryOperator<Item.Properties> properties(ItemTemplate template) {
         return properties -> {
             properties.stacksTo(template.maxStackSize());
             properties.rarity(rarityOf(template.rarity()));
+            return properties;
         };
     }
 
