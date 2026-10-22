@@ -68,6 +68,7 @@ public final class GenesisSelfTest {
         testMaterialPhysicsAndChemistry();
         testMagicModel();
         testMagicField();
+        testMagicStorage();
         testPlanetContinuity();
         testTerrainAndHydrology();
         testEcology();
@@ -309,6 +310,38 @@ public final class GenesisSelfTest {
         check("a dry world carries less magic than a wet one",
                 MagicFieldModel.baselineOf(PlanetDefinition.ember())
                         < MagicFieldModel.baselineOf(PlanetDefinition.homeWorld()));
+    }
+
+    // ---------------------------------------------------------------------
+    // 4b. the storage of the magic
+    // ---------------------------------------------------------------------
+
+    private static void testMagicStorage() {
+        section("The storage of the magic");
+        PlanetDefinition planet = PlanetDefinition.homeWorld();
+        MagicFieldModel model = new MagicFieldModel(planet, 20261021L);
+
+        // The field writes into the list it was given. That is how the magic of a world reaches
+        // the disk: the world keeps the list, the field writes into it.
+        java.util.List<genesis.api.magic.MagicInfluence> stored = new java.util.ArrayList<>();
+        MagicField field = new MagicField(model, stored);
+        field.influence(120.0, -340.0, 96.0, 0.75);
+        check("a change of the magic reaches the list it was given", stored.size() == 1);
+
+        // A world that is read back continues where it left off.
+        MagicField reloaded = new MagicField(model, stored);
+        double ground = model.baseConcentrationAt(120.0, -340.0);
+        check("a world that is read back keeps the magic it was given",
+                Math.abs((reloaded.concentrationAt(120.0, -340.0) - ground) - 0.75) < 1.0e-6);
+
+        // And the change is announced, so that the world knows that it has to be written.
+        int[] announced = { 0 };
+        field.setChangeListener(changed -> announced[0]++);
+        field.influence(0.0, 0.0, 32.0, 0.5);
+        check("a change of the magic is announced", announced[0] == 1);
+        field.clearInfluences();
+        check("undoing every influence is announced too", announced[0] == 2);
+        check("undoing every influence empties the list", stored.isEmpty());
     }
 
     // ---------------------------------------------------------------------

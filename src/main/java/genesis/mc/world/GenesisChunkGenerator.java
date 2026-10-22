@@ -116,6 +116,19 @@ public class GenesisChunkGenerator extends ChunkGenerator {
         return models;
     }
 
+    /**
+     * The distribution of the magic over this world.
+     *
+     * <p>The distribution follows from the seed of the world, so it is the same in every dimension
+     * that shares the seed and it never has to be stored. The influences that were applied to it
+     * do have to be stored, and they live in the magic data of the dimension.
+     *
+     * @param randomState the random state of the world, which carries its seed
+     */
+    public genesis.core.magic.MagicFieldModel magicModel(RandomState randomState) {
+        return models(randomState).magicModel();
+    }
+
     /** Derives the seed of the world from the random state of the generator. */
     private static long seedOf(RandomState randomState) {
         if (randomState == null) {
@@ -135,7 +148,7 @@ public class GenesisChunkGenerator extends ChunkGenerator {
         final TerrainModel terrain;
         final HydrologyModel hydrology;
         final EcologyModel ecology;
-        final genesis.core.magic.MagicField magic;
+        final genesis.core.magic.MagicFieldModel magicModel;
         final Noise caveNoise;
         final Noise tunnelNoise;
 
@@ -146,15 +159,17 @@ public class GenesisChunkGenerator extends ChunkGenerator {
             this.ecology = new EcologyModel(this.terrain, planet);
             // The magic of the world is initialised while the world is generated, because that is
             // the moment the seed of the world is known.
-            this.magic = new genesis.core.magic.MagicField(
-                    new genesis.core.magic.MagicFieldModel(planet, seed));
+            // The distribution of the magic follows from the seed, so it is the same everywhere and
+            // does not have to be stored. The influences that were applied to it do have to be
+            // stored, and they live in the magic data of the dimension.
+            this.magicModel = new genesis.core.magic.MagicFieldModel(planet, seed);
             this.caveNoise = new Noise(seed).fork("caves");
             this.tunnelNoise = new Noise(seed).fork("tunnels");
         }
 
-        /** The magic of this world: the concentration of every region and everything done to it. */
-        public genesis.core.magic.MagicField magic() {
-            return magic;
+        /** The distribution of the magic over this world. */
+        public genesis.core.magic.MagicFieldModel magicModel() {
+            return magicModel;
         }
 
         /** The temperature of the ground at a position. */
@@ -419,7 +434,7 @@ public class GenesisChunkGenerator extends ChunkGenerator {
         Models local = currentModels();
         if (local != null) {
             list.add("Temperature: " + local.temperatureAt(pos.getX(), pos.getZ()).format());
-            genesis.api.magic.MagicConcentration concentration = local.magic().concentration(pos.getX(), pos.getZ());
+            genesis.api.magic.MagicConcentration concentration = local.magicModel().concentration(pos.getX(), pos.getZ());
             list.add("Magic concentration: " + String.format("%.3f", concentration.value())
                     + " (" + concentration.tier() + ")");
         }

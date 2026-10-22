@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "genesis:crystal_shard",
+    "genesis:crystal_shard",
+    "genesis:crystal_shard",
+    "genesis:crystal_shard"
+  ],
+  "result": {
+    "count": 4,
+    "id": "genesis:arcane_dust"
+  }
+}

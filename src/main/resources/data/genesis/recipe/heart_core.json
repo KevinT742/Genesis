@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:bone",
+    "minecraft:rotten_flesh",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "id": "genesis:heart_core"
+  }
+}

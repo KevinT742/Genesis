@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "genesis:crystal_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "genesis:crystal_shard"
+  }
+}

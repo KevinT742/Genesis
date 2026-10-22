@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "D": "genesis:arcane_dust",
+    "S": "minecraft:stone"
+  },
+  "pattern": [
+    "SSS",
+    "SDS",
+    "SSS"
+  ],
+  "result": {
+    "count": 4,
+    "id": "genesis:arcane_brick"
+  }
+}

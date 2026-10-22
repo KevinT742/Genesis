@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import genesis.api.magic.MagicConcentration;
+import genesis.api.magic.MagicInfluence;
 import genesis.api.magic.MagicTier;
 
 /**
@@ -15,17 +16,51 @@ import genesis.api.magic.MagicTier;
  *
  * <p>The influences are kept in a copy on write list: they are written rarely and read often, and
  * the concentration is asked for by every chunk that is generated.
+ *
+ * <p>The list of influences can be handed in from the outside. That is how the persistence layer
+ * works: the world stores the influences as plain data and gives them back to the field when the
+ * world is loaded, and the field writes them straight into that list while the world is played.
  */
 public final class MagicField {
 
+    /**
+     * Notified whenever the magic of the world changes.
+     *
+     * <p>The persistence layer uses this to know that the world has to be written to disk.
+     */
+    @FunctionalInterface
+    public interface ChangeListener {
+        /** Called after the magic of the world has changed. */
+        void onChanged(MagicField field);
+    }
+
     private final MagicFieldModel model;
-    private final List<Influence> influences = new CopyOnWriteArrayList<>();
+    private final List<MagicInfluence> influences;
+    private volatile ChangeListener listener = field -> {
+    };
 
     public MagicField(MagicFieldModel model) {
+        this(model, new CopyOnWriteArrayList<>());
+    }
+
+    /**
+     * Creates a field that writes its influences into an existing list.
+     *
+     * <p>The list is used as it is, it is not copied. Passing the list of a stored world here
+     * means that a change to the magic is a change to the stored world.
+     *
+     * @param model   the distribution of the magic over the planet
+     * @param backing the list the influences are kept in
+     */
+    public MagicField(MagicFieldModel model, List<MagicInfluence> backing) {
         if (model == null) {
             throw new IllegalArgumentException("A magic field needs a model");
         }
+        if (backing == null) {
+            throw new IllegalArgumentException("A magic field needs a list to keep its influences in");
+        }
         this.model = model;
+        this.influences = backing;
     }
 
     /** The distribution the field was built from. */
@@ -36,7 +71,7 @@ public final class MagicField {
     /** The concentration of the ground at a position, including every outside influence. */
     public double concentrationAt(double x, double z) {
         double value = model.baseConcentrationAt(x, z);
-        for (Influence influence : influences) {
+        for (MagicInfluence influence : influences) {
             value += influence.contributionAt(x, z);
         }
         return Math.max(0.0, value);
@@ -62,44 +97,31 @@ public final class MagicField {
         if (radius <= 0.0 || delta == 0.0) {
             return;
         }
-        influences.add(new Influence(x, z, radius, delta));
+        influences.add(new MagicInfluence(x, z, radius, delta));
+        listener.onChanged(this);
     }
 
     /** Every outside influence that was applied to the field. */
-    public List<Influence> influences() {
+    public List<MagicInfluence> influences() {
         return List.copyOf(influences);
+    }
+
+    /** Replaces every outside influence of the field. */
+    public void setInfluences(List<MagicInfluence> replacement) {
+        influences.clear();
+        influences.addAll(replacement);
+        listener.onChanged(this);
     }
 
     /** Undoes every outside influence. */
     public void clearInfluences() {
         influences.clear();
+        listener.onChanged(this);
     }
 
-    /**
-     * One outside operation on the magic of a region.
-     *
-     * @param x      the centre of the area, in blocks
-     * @param z      the centre of the area, in blocks
-     * @param radius how far the operation reaches, in blocks
-     * @param delta  how much magic the operation adds or takes away
-     */
-    public record Influence(double x, double z, double radius, double delta) {
-
-        public Influence {
-            radius = Math.max(0.0, radius);
-        }
-
-        /** How much this influence changes the concentration at a position. */
-        public double contributionAt(double pointX, double pointZ) {
-            if (radius <= 0.0) {
-                return 0.0;
-            }
-            double distance = Math.hypot(pointX - x, pointZ - z);
-            if (distance >= radius) {
-                return 0.0;
-            }
-            double falloff = 1.0 - distance / radius;
-            return delta * falloff * falloff;
-        }
+    /** Sets the listener that is told when the magic of the world changes. */
+    public void setChangeListener(ChangeListener value) {
+        this.listener = value == null ? field -> {
+        } : value;
     }
 }
