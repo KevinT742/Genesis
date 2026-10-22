@@ -1,0 +1,25 @@
+# ============================================================================
+# 行尾规则
+# ============================================================================
+# 本机 Git 的 core.autocrlf 是**系统级** true（见 F:/DevEnv/Git/etc/gitconfig），
+# 不显式约束的话，任何一次 checkout 都会把工作区的文本文件转成 CRLF。
+#
+# 母文件夹根仓库的 .gitattributes 管不到这里 —— 本目录是**独立仓库**，
+# 各带一份，规则要保持一致。
+# ============================================================================
+
+* text=auto eol=lf
+
+# Windows 批处理需要 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 禁用 autocrlf on generated files, they always generate with LF
+src/generated/**/.cache/* text eol=lf
+src/generated/**/*.json text eol=lf
+
+# 二进制
+*.jar binary
+*.png binary
+*.zip binary
+*.class binary

@@ -1,0 +1,11 @@
+{
+  "type": "genesis:terran",
+  "generator": {
+    "type": "genesis:genesis_chunk_generator",
+    "biome_source": {
+      "type": "genesis:genesis_biome_source",
+      "planet": "genesis:terran"
+    },
+    "planet": "genesis:terran"
+  }
+}

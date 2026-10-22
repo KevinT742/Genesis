@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "genesis:block/gravel_path"
+    }
+  }
+}

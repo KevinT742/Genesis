@@ -1,0 +1,17 @@
+{
+  "itemGroup.genesis": "Genesis",
+  "block.genesis.andesite_brick": "Andesite Brick",
+  "block.genesis.deepslate_brick": "Deepslate Brick",
+  "block.genesis.packed_earth": "Packed Earth",
+  "block.genesis.gravel_path": "Gravel Path",
+  "block.genesis.cobble_path": "Cobblestone Path",
+  "block.genesis.arcane_brick": "Arcane Brick",
+  "block.genesis.crystal_block": "Crystal Block",
+  "item.genesis.crystal_shard": "Crystal Shard",
+  "item.genesis.arcane_dust": "Arcane Dust",
+  "item.genesis.heart_core": "Heart Core",
+  "item.genesis.spirit_vial": "Spirit Vial",
+  "item.genesis.rune_tablet": "Rune Tablet",
+  "dimension.genesis.terran": "Terran",
+  "dimension.genesis.ember": "Ember"
+}
