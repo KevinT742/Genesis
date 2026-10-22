@@ -216,6 +216,15 @@ public final class MaterialFamily {
                 new MagicProperties(ElementAffinity.EARTH, 10.0, 0.35, 50.0, 0.6, 0.3, 0.3, 0.25, 0.25));
     }
 
+    /** Sulfur: a yellow mineral that burns with a blue flame. */
+    public static MaterialProfile sulfur(String id) {
+        return new MaterialProfile(id,
+                new PhysicalProperties(1960.0, BLOCK_VOLUME, 2.0, 2.0, 0.0, 0.205, 705.0,
+                        Temperature.ofKelvin(388.15), Temperature.ofKelvin(718.15), 0.6, 0),
+                new ChemicalProperties(Composition.parse("S"), 0.0, Phase.SOLID, 0.2, 1.0, 0.0, 0.0, 0.0, 0.05, 0.0),
+                new MagicProperties(ElementAffinity.EARTH, 12.0, 0.4, 60.0, 0.6, 0.35, 0.3, 0.3, 0.3));
+    }
+
     /**
      * Netherite: the dark alloy of the lower world.
      *
@@ -261,8 +270,16 @@ public final class MaterialFamily {
                 new PhysicalProperties(1000.0, BLOCK_VOLUME, 1.0, 1.0, 0.2, 0.5, 1500.0,
                         Temperature.ofKelvin(500.0), Temperature.ofKelvin(900.0), 0.6, 0),
                 new ChemicalProperties(Composition.EMPTY, 0.0, Phase.SOLID, 0.1, 0.0, 0.0, 0.0, 0.0, 0.05, 0.0),
-                new MagicProperties(ElementAffinity.EARTH, 5.0, 0.3, 30.0, 0.5, 0.2, 0.15, 0.1, 0.2));
+                new MagicProperties(ElementAffinity.EARTH, GENERIC_MANA_CAPACITY, 0.3, 30.0, 0.5, 0.2, 0.15, 0.1, 0.2));
     }
+
+    /**
+     * The mark of a material the family does not know.
+     *
+     * <p>It is the mana capacity of {@link #generic(String)}, and nothing else carries it, so it
+     * can be used to tell a known material from an unknown one.
+     */
+    public static final double GENERIC_MANA_CAPACITY = 5.0;
 
     // ---------------------------------------------------------------------
     // the families the magic model needs

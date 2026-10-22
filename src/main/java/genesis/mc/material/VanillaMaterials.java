@@ -143,6 +143,11 @@ public final class VanillaMaterials {
         RULES.add(new Rule(path -> path.contains(part), profile));
     }
 
+    /** A rule that matches when the identifier carries the word anywhere in it. */
+    private static void containsWord(String part, Function<String, MaterialProfile> profile) {
+        RULES.add(new Rule(path -> path.contains(part), profile));
+    }
+
     private static void exact(String path, MaterialProfile profile) {
         EXACT.put(path, profile);
     }
@@ -283,6 +288,27 @@ public final class VanillaMaterials {
         prefix("gold_", metal("Au", 3.0, true));
         prefix("chainmail_", metal("Fe", 5.0, false));
 
+        // The whole copper family: the blocks that have weathered, oxidised or been waxed are
+        // still copper, whatever the game calls them.
+        containsWord("copper", metal("Cu", 3.5, false));
+
+        // The raw blocks are the metal before it was refined.
+        prefix("raw_iron", metal("Fe", 5.0, false));
+        prefix("raw_copper", metal("Cu", 3.5, false));
+        prefix("raw_gold", metal("Au", 3.0, true));
+
+        // An ore is the metal inside the rock, so it carries the metal and not the stone it
+        // was found in. This has to come before the rule for deep slate.
+        containsWord("iron_ore", metal("Fe", 5.0, false));
+        containsWord("copper_ore", metal("Cu", 3.5, false));
+        containsWord("gold_ore", metal("Au", 3.0, true));
+        containsWord("diamond_ore", family(id -> MaterialFamily.gem(id, "C", 3515.0, 10.0)));
+        containsWord("emerald_ore", family(id -> MaterialFamily.gem(id, "Be3Al2Si6O18", 2700.0, 7.5)));
+        containsWord("lapis_ore", family(id -> MaterialFamily.gem(id, "Na8(AlSi3O8)8(SO4)2", 2400.0, 5.5)));
+        containsWord("redstone_ore", family(id -> MaterialFamily.gem(id, "SiO2", 2400.0, 2.0)));
+        containsWord("coal_ore", family(id -> MaterialFamily.carbon(id)));
+        containsWord("quartz_ore", family(id -> MaterialFamily.gem(id, "SiO2", 2650.0, 7.0)));
+
         // A golden apple is a fruit that happens to be gold coloured.
         prefix("golden_", family(id -> MaterialFamily.organic(id)));
 
@@ -333,11 +359,20 @@ public final class VanillaMaterials {
         prefix("deepslate_", family(id -> MaterialFamily.deepStone(id)));
         prefix("cobbled_deepslate", family(id -> MaterialFamily.deepStone(id)));
         prefix("polished_deepslate", family(id -> MaterialFamily.deepStone(id)));
+        prefix("deepslate", family(id -> MaterialFamily.deepStone(id)));
         prefix("stone_", family(id -> MaterialFamily.rock(id)));
         prefix("cobblestone", family(id -> MaterialFamily.rock(id)));
         prefix("andesite", family(id -> MaterialFamily.rock(id)));
         prefix("diorite", family(id -> MaterialFamily.rock(id)));
         prefix("granite", family(id -> MaterialFamily.rock(id)));
+        // The cut, polished, cracked and mossy forms of a stone are the same stone.
+        prefix("polished_", family(id -> MaterialFamily.rock(id)));
+        prefix("smooth_", family(id -> MaterialFamily.rock(id)));
+        prefix("cut_", family(id -> MaterialFamily.rock(id)));
+        prefix("chiseled_", family(id -> MaterialFamily.rock(id)));
+        prefix("cracked_", family(id -> MaterialFamily.rock(id)));
+        prefix("mossy_", family(id -> MaterialFamily.rock(id)));
+        prefix("infested_", family(id -> MaterialFamily.rock(id)));
         prefix("tuff", family(id -> MaterialFamily.rock(id)));
         prefix("calcite", family(id -> MaterialFamily.rock(id)));
         prefix("netherrack", family(id -> MaterialFamily.rock(id)));
@@ -347,6 +382,7 @@ public final class VanillaMaterials {
         prefix("prismarine", family(id -> MaterialFamily.rock(id)));
         prefix("purpur", family(id -> MaterialFamily.rock(id)));
         prefix("sandstone", family(id -> MaterialFamily.rock(id)));
+        prefix("red_sandstone", family(id -> MaterialFamily.rock(id)));
         prefix("terracotta", family(id -> MaterialFamily.rock(id)));
         suffix("_terracotta", family(id -> MaterialFamily.rock(id)));
         word("concrete", family(id -> MaterialFamily.rock(id)));
@@ -358,8 +394,12 @@ public final class VanillaMaterials {
         prefix("obsidian", family(id -> MaterialFamily.obsidian(id)));
         prefix("crying_obsidian", family(id -> MaterialFamily.obsidian(id)));
         prefix("amethyst_", family(id -> MaterialFamily.crystal(id)));
+        prefix("budding_", family(id -> MaterialFamily.crystal(id)));
         prefix("glowstone", family(id -> MaterialFamily.crystal(id)));
         prefix("sea_lantern", family(id -> MaterialFamily.crystal(id)));
+        prefix("sulfur", family(id -> MaterialFamily.sulfur(id)));
+        prefix("cinnabar", family(id -> MaterialFamily.gem(id, "HgS", 8200.0, 2.5)));
+        prefix("lodestone", family(id -> MaterialFamily.rock(id)));
     }
 
     // ---------------------------------------------------------------------
@@ -409,6 +449,17 @@ public final class VanillaMaterials {
         prefix("book", family(id -> MaterialFamily.fibre(id)));
         prefix("map", family(id -> MaterialFamily.fibre(id)));
         suffix("_stained_glass", family(id -> MaterialFamily.glass(id)));
+
+        // The coloured variants of a thing are the same thing.
+        suffix("_concrete", family(id -> MaterialFamily.rock(id)));
+        suffix("_concrete_powder", family(id -> MaterialFamily.granular(id)));
+        suffix("_glazed_terracotta", family(id -> MaterialFamily.rock(id)));
+        suffix("_candle", family(id -> MaterialFamily.organic(id)));
+        suffix("_bed", family(id -> MaterialFamily.organic(id)));
+        suffix("_shulker_box", family(id -> MaterialFamily.organic(id)));
+        suffix("_banner", family(id -> MaterialFamily.wood(id)));
+        suffix("_dye", family(id -> MaterialFamily.organic(id)));
+        suffix("_coral", family(id -> MaterialFamily.rock(id)));
     }
 
     // ---------------------------------------------------------------------

@@ -200,14 +200,12 @@ tasks.register('persistenceTest', JavaExec) {
     mainClass = 'genesis.mc.dev.GenesisPersistenceTest'
 }
 
-// Runs the material self test. It checks that every vanilla block and item has a material,
-// which needs the registries of the game.
-tasks.register('materialTest', JavaExec) {
-    group = 'verification'
-    description = 'Runs the Genesis material self test.'
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'genesis.mc.dev.GenesisMaterialCatalogTest'
-}
+// The material self test (genesis.mc.dev.GenesisMaterialCatalogTest) has **no** Gradle task on
+// purpose: it walks the registries of the game, and the registries are not available before the
+// game has started. With the real NeoForge on the class path, even the static initialiser of
+// SharedConstants asks for the loader of the mods, so a standalone process cannot reach them.
+// It therefore runs through the offline harness, which uses the real Minecraft together with the
+// stubs instead of the real NeoForge. See verification/build-and-test.ps1.
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {

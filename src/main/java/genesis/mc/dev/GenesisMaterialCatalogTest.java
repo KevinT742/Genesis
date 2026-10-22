@@ -1,5 +1,6 @@
 package genesis.mc.dev;
 
+import genesis.api.material.MaterialFamily;
 import genesis.api.material.MaterialProfile;
 import genesis.api.material.MaterialRegistry;
 import genesis.mc.material.GenesisMaterialCatalog;
@@ -40,6 +41,7 @@ public final class GenesisMaterialCatalogTest {
         testCoverage();
         testBlockItemsShareTheirBlock();
         testRealMaterials();
+        testTheKnownOnesAreKnown();
         testTheLookupFindsThem();
 
         System.out.println("checks  : " + checks);
@@ -74,12 +76,23 @@ public final class GenesisMaterialCatalogTest {
                 missingItems == 0);
     }
 
-    /** A block and the item that places it are the same material. */
+    /**
+     * A block and the item that places it are the same material.
+     *
+     * <p>Only when the two carry the same name, because then they really are the same thing: the
+     * ball of string and the block of string are called differently, and the berries and the bush
+     * they grow on are two different things as well.
+     */
     private static void testBlockItemsShareTheirBlock() {
         int mismatched = 0;
         int compared = 0;
         for (Item item : BuiltInRegistries.ITEM) {
             if (!(item instanceof BlockItem blockItem)) {
+                continue;
+            }
+            Identifier blockKey = BuiltInRegistries.BLOCK.getKey(blockItem.getBlock());
+            Identifier itemKey = BuiltInRegistries.ITEM.getKey(item);
+            if (!blockKey.toString().equals(itemKey.toString())) {
                 continue;
             }
             MaterialProfile blockProfile = GenesisMaterialCatalog.profileOf(blockItem.getBlock());
@@ -130,6 +143,11 @@ public final class GenesisMaterialCatalogTest {
         MaterialProfile glass = profile(Blocks.GLASS);
         check("glass is silicon dioxide", glass != null && "O2SI".equals(glass.formula()));
         check("glass is not a magic material", glass != null && !glass.isMagicMaterial());
+
+        MaterialProfile bread = profile(Items.BREAD);
+        check("food is living matter", bread != null && "C".equals(bread.formula()));
+        check("a portion of food weighs a quarter of a kilogramme",
+                bread != null && Math.abs(bread.mass() - 0.25) < 0.01);
     }
 
     /**
@@ -155,6 +173,34 @@ public final class GenesisMaterialCatalogTest {
 
     private static MaterialProfile profile(Block block) {
         return GenesisMaterialCatalog.profileOf(block);
+    }
+
+    /**
+     * The materials that matter have to be known.
+     *
+     * <p>The fallback is allowed — there will always be something nobody has looked at — but the
+     * things the world is actually made of must not fall back to it.
+     */
+    private static final String[] MUST_BE_KNOWN = {
+            "iron_ingot", "gold_ingot", "copper_ingot", "netherite_ingot", "diamond", "emerald",
+            "oak_planks", "oak_log", "stone", "cobblestone", "deepslate", "sand", "gravel", "dirt",
+            "glass", "white_wool", "paper", "book", "string", "coal", "iron_ore", "deepslate_iron_ore",
+            "gold_ore", "nether_gold_ore", "diamond_ore", "redstone", "lapis_lazuli", "quartz",
+            "waxed_copper_block", "exposed_copper", "white_concrete", "potion", "bone",
+            "leather", "feather", "iron_sword", "golden_apple"
+    };
+
+    /** The materials that matter have to be known. */
+    private static void testTheKnownOnesAreKnown() {
+        java.util.List<String> unknown = new java.util.ArrayList<>();
+        for (String path : MUST_BE_KNOWN) {
+            MaterialProfile profile = MaterialRegistry.get("minecraft:" + path).orElse(null);
+            if (profile == null || profile.magic().manaCapacity() == MaterialFamily.GENERIC_MANA_CAPACITY) {
+                unknown.add(path);
+            }
+        }
+        check("the materials the world is made of are known (" + MUST_BE_KNOWN.length + " of them)",
+                unknown.isEmpty());
     }
 
     private static void check(String name, boolean condition) {
