@@ -1,53 +1,76 @@
 package genesis.mc.material;
 
-import genesis.api.material.MaterialFamily;
 import genesis.api.material.MaterialProfile;
 import genesis.api.material.MaterialRegistry;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 
 /**
- * Binds the material profiles to the blocks that ship with Minecraft.
+ * Binds the material profiles to the blocks and items that ship with Minecraft.
  *
- * <p>Vanilla blocks are given a profile so that they behave consistently with the blocks the mod
- * family adds. A stone brick and a Genesis stone brick then share the same physics, chemistry and
- * magic, which is what makes the unified template usable across the whole ecosystem.
+ * <p>Vanilla blocks and items are given a profile so that they behave consistently with the blocks
+ * the mod family adds. A stone brick and a Genesis stone brick then share the same physics,
+ * chemistry and magic, which is what makes the unified template usable across the whole ecosystem.
+ *
+ * <p>The whole vanilla world is covered: every block and every item of the game gets a profile, so
+ * there is no such thing as a vanilla thing whose material the family does not know.
  */
 public final class GenesisMaterialCatalog {
 
     private GenesisMaterialCatalog() {
     }
 
-    /** Registers the profiles of the vanilla blocks. */
+    /** Registers the materials of every vanilla block and every vanilla item. */
     public static void registerVanillaProfiles() {
-        register(Blocks.STONE, MaterialFamily.rock("minecraft:stone"));
-        register(Blocks.COBBLESTONE, MaterialFamily.rock("minecraft:cobblestone"));
-        register(Blocks.STONE_BRICKS, MaterialFamily.rock("minecraft:stone_bricks"));
-        register(Blocks.DEEPSLATE, MaterialFamily.deepStone("minecraft:deepslate"));
-        register(Blocks.DIRT, MaterialFamily.granular("minecraft:dirt"));
-        register(Blocks.GRASS_BLOCK, MaterialFamily.organic("minecraft:grass_block"));
-        register(Blocks.COARSE_DIRT, MaterialFamily.granular("minecraft:coarse_dirt"));
-        register(Blocks.SAND, MaterialFamily.granular("minecraft:sand"));
-        register(Blocks.GRAVEL, MaterialFamily.granular("minecraft:gravel"));
-        register(Blocks.CLAY, MaterialFamily.granular("minecraft:clay"));
-        register(Blocks.SNOW_BLOCK, MaterialFamily.frozen("minecraft:snow_block"));
-        register(Blocks.WATER, MaterialFamily.liquid("minecraft:water"));
-        register(Blocks.NETHERRACK, MaterialFamily.rock("minecraft:netherrack"));
-
-        register(Blocks.OAK_PLANKS, MaterialFamily.wood("minecraft:oak_planks"));
-        register(Blocks.OAK_LOG, MaterialFamily.wood("minecraft:oak_log"));
-        register(Blocks.OAK_LEAVES, MaterialFamily.foliage("minecraft:oak_leaves"));
-
-        register(Blocks.IRON_BLOCK, MaterialFamily.metal("minecraft:iron_block", "Fe", 5.0));
-        register(Blocks.GOLD_BLOCK, MaterialFamily.nobleMetal("minecraft:gold_block", "Au", 3.0));
-        register(Blocks.DIAMOND_BLOCK, MaterialFamily.crystal("minecraft:diamond_block"));
-        register(Blocks.AMETHYST_BLOCK, MaterialFamily.crystal("minecraft:amethyst_block"));
-        register(Blocks.OBSIDIAN, MaterialFamily.obsidian("minecraft:obsidian"));
+        for (Block block : BuiltInRegistries.BLOCK) {
+            Identifier key = BuiltInRegistries.BLOCK.getKey(block);
+            MaterialRegistry.register(key.toString(), VanillaMaterials.of(key.getPath(), VanillaMaterials.BLOCK));
+        }
+        for (Item item : BuiltInRegistries.ITEM) {
+            Identifier key = BuiltInRegistries.ITEM.getKey(item);
+            MaterialRegistry.register(key.toString(), materialOf(item, key));
+        }
     }
 
-    private static void register(Block block, MaterialProfile profile) {
-        MaterialRegistry.register("minecraft:" + net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block).getPath(),
-                profile);
+    /**
+     * The material of an item.
+     *
+     * <p>An item that places a block is made of the same material as that block: a string is
+     * string, whether it is a ball of it or a block of it. The identifier of the item and the
+     * identifier of the block are not always the same — the ball of string is called
+     * {@code minecraft:string} and the block of it {@code minecraft:string_block} — so the material
+     * is taken from the block itself rather than from the name.
+     *
+     * <p>Everything else takes the material the rules give it, and a portion of food holds a
+     * portion of its material rather than a piece of it.
+     */
+    private static MaterialProfile materialOf(Item item, Identifier key) {
+        if (item instanceof BlockItem blockItem) {
+            MaterialProfile block = profileOf(blockItem.getBlock());
+            if (block != null) {
+                return block.withVolume(VanillaMaterials.BLOCK);
+            }
+            return VanillaMaterials.of(key.getPath(), VanillaMaterials.BLOCK);
+        }
+        if (VanillaMaterials.isFood(key.getPath())) {
+            return VanillaMaterials.of(key.getPath(), VanillaMaterials.FOOD);
+        }
+        return VanillaMaterials.of(key.getPath());
+    }
+
+    /** The material profile of a block, or {@code null} when it has none. */
+    public static MaterialProfile profileOf(Block block) {
+        Identifier key = BuiltInRegistries.BLOCK.getKey(block);
+        return MaterialRegistry.get(key.toString()).orElse(null);
+    }
+
+    /** The material profile of an item, or {@code null} when it has none. */
+    public static MaterialProfile profileOf(Item item) {
+        Identifier key = BuiltInRegistries.ITEM.getKey(item);
+        return MaterialRegistry.get(key.toString()).orElse(null);
     }
 }

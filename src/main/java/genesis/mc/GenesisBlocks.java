@@ -210,7 +210,6 @@ public final class GenesisBlocks {
 
     /** The material profile of a Genesis block, or {@code null} when it has none. */
     public static MaterialProfile profileOf(Block block) {
-        return MaterialRegistry.get("genesis:" + net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block).getPath())
-                .orElse(null);
+        return genesis.mc.material.GenesisMaterialCatalog.profileOf(block);
     }
 }

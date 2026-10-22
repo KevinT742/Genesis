@@ -69,6 +69,19 @@ public record PhysicalProperties(
         return density * volume;
     }
 
+    /**
+     * Returns the same material in a different amount.
+     *
+     * <p>Only the volume changes; the density and every other property stay the same, so the mass
+     * of the unit follows from the density and the new volume.
+     *
+     * @param newVolume the volume of one unit, in cubic metres
+     */
+    public PhysicalProperties withVolume(double newVolume) {
+        return new PhysicalProperties(density, newVolume, hardness, toughness, elasticity,
+                thermalConductivity, specificHeat, meltingPoint, boilingPoint, friction, lightEmission);
+    }
+
     /** How much heat one unit absorbs when its temperature rises by one kelvin, in joules. */
     public double thermalMass() {
         return mass() * specificHeat;

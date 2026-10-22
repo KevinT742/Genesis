@@ -103,4 +103,17 @@ public record MaterialProfile(
     public MaterialProfile withId(String newId) {
         return new MaterialProfile(newId, physical, chemical, magic);
     }
+
+    /**
+     * Returns a copy of this profile that describes a different <em>amount</em> of the material.
+     *
+     * <p>The material itself does not change: a lump of iron and a bar of iron are the same iron.
+     * Only the volume changes, and the mass follows from it, exactly as it does in the real world.
+     * This is what lets one profile describe both a block of a material and a single item of it.
+     *
+     * @param volume the volume of one unit, in cubic metres
+     */
+    public MaterialProfile withVolume(double volume) {
+        return new MaterialProfile(id, physical.withVolume(volume), chemical, magic);
+    }
 }

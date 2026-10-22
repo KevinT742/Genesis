@@ -12,6 +12,7 @@ import genesis.api.material.MaterialProfile;
 import genesis.api.planet.PlanetDefinition;
 import genesis.core.magic.MagicField;
 import genesis.mc.magic.GenesisMagicData;
+import genesis.mc.material.GenesisMaterialCatalog;
 import genesis.mc.planet.GenesisPlanets;
 import genesis.mc.world.GenesisChunkGenerator;
 
@@ -101,13 +102,25 @@ public final class GenesisApi {
     /**
      * The material profile of a block.
      *
-     * <p>Every block of the game carries one, whether it was registered by Genesis or by another
-     * member of the family.
+     * <p>Every block of the game carries one, whether it was registered by Genesis, by another
+     * member of the family, or by Minecraft itself.
      *
      * @return the profile, or nothing when the block has no material
      */
     public static Optional<MaterialProfile> materialOf(Block block) {
-        return Optional.ofNullable(GenesisBlocks.profileOf(block));
+        return Optional.ofNullable(GenesisMaterialCatalog.profileOf(block));
+    }
+
+    /**
+     * The material profile of an item.
+     *
+     * <p>The same holds for items: an iron ingot is iron, and the profile says so, with the
+     * density of iron and the mass that follows from it.
+     *
+     * @return the profile, or nothing when the item has no material
+     */
+    public static Optional<MaterialProfile> materialOf(Item item) {
+        return Optional.ofNullable(GenesisMaterialCatalog.profileOf(item));
     }
 
     /**

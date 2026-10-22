@@ -176,6 +176,95 @@ public final class MaterialFamily {
     }
 
     // ---------------------------------------------------------------------
+    // the families the vanilla world is made of
+    // ---------------------------------------------------------------------
+
+    /**
+     * Glass: amorphous silicon dioxide.
+     *
+     * <p>It is the same chemistry as rock, but it has no grain and it lets the light through,
+     * which is why it carries the affinity of light rather than of earth.
+     */
+    public static MaterialProfile glass(String id) {
+        return new MaterialProfile(id,
+                new PhysicalProperties(2500.0, BLOCK_VOLUME, 0.3, 0.3, 0.0, 1.0, 840.0,
+                        Temperature.ofKelvin(1673.15), Temperature.ofKelvin(2503.15), 0.6, 0),
+                new ChemicalProperties(Composition.parse("SiO2"), 4.0, Phase.SOLID, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+                new MagicProperties(ElementAffinity.LIGHT, 12.0, 0.2, 60.0, 0.7, 0.5, 0.2, 0.35, 0.35));
+    }
+
+    /**
+     * Plant fibre: wool, string, paper.
+     *
+     * <p>Very light, very flammable and it takes magic up quite well, which is why a bundle of
+     * fibre is a decent thing to bind a charm with.
+     */
+    public static MaterialProfile fibre(String id) {
+        return new MaterialProfile(id,
+                new PhysicalProperties(80.0, BLOCK_VOLUME, 0.1, 0.1, 0.3, 0.12, 1400.0,
+                        Temperature.ofKelvin(573.15), Temperature.ofKelvin(723.15), 0.6, 0),
+                new ChemicalProperties(Composition.parse("C6H10O5"), 0.0, Phase.SOLID, 0.5, 0.3, 0.9, 0.0, 0.0, 0.05, 16.0),
+                new MagicProperties(ElementAffinity.ORGANIC, 14.0, 0.5, 70.0, 0.4, 0.3, 0.45, 0.35, 0.3));
+    }
+
+    /** Coal: nearly pure carbon. */
+    public static MaterialProfile carbon(String id) {
+        return new MaterialProfile(id,
+                new PhysicalProperties(1500.0, BLOCK_VOLUME, 1.5, 3.0, 0.0, 1.5, 710.0,
+                        Temperature.ofKelvin(3823.15), Temperature.ofKelvin(4300.15), 0.6, 0),
+                new ChemicalProperties(Composition.parse("C"), 0.0, Phase.SOLID, 0.4, 0.9, 0.0, 0.0, 0.0, 0.2, 0.0),
+                new MagicProperties(ElementAffinity.EARTH, 10.0, 0.35, 50.0, 0.6, 0.3, 0.3, 0.25, 0.25));
+    }
+
+    /**
+     * Netherite: the dark alloy of the lower world.
+     *
+     * <p>It is not an element of the real world, so it has no place in the table of the elements.
+     * Its numbers are the ones the game gives it: dense, hard, and it does not burn.
+     */
+    public static MaterialProfile netherite(String id) {
+        return new MaterialProfile(id,
+                new PhysicalProperties(5000.0, BLOCK_VOLUME, 7.0, 20.0, 0.02, 20.0, 500.0,
+                        Temperature.ofKelvin(1600.0), Temperature.ofKelvin(3000.0), 0.6, 0),
+                new ChemicalProperties(Composition.EMPTY, 0.0, Phase.SOLID, 0.1, 0.0, 0.0, 0.0, 0.1, 0.4, 0.0),
+                new MagicProperties(ElementAffinity.DARK, 90.0, 0.15, 300.0, 0.95, 0.7, 0.35, 0.45, 0.5));
+    }
+
+    /**
+     * A gem: a crystal of a real substance.
+     *
+     * <p>Unlike the metals, a gem does not melt in a world you can reach: it is given a melting
+     * point far above the temperatures a furnace can reach, which is true of every gem that exists.
+     *
+     * @param id      the identifier of the material
+     * @param formula the chemical formula of the gem
+     * @param density the density of the gem, in kilograms per cubic metre
+     * @param hardness the hardness of the gem on the Mohs scale
+     */
+    public static MaterialProfile gem(String id, String formula, double density, double hardness) {
+        return new MaterialProfile(id,
+                new PhysicalProperties(density, BLOCK_VOLUME, hardness, hardness * 3.0, 0.02, 18.0, 700.0,
+                        Temperature.ofKelvin(2500.0), Temperature.ofKelvin(3500.0), 0.6, 0),
+                new ChemicalProperties(Composition.parse(formula), 0.0, Phase.SOLID, 0.02, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0),
+                new MagicProperties(ElementAffinity.CRYSTAL, 240.0, 0.1, 560.0, 0.9, 0.8, 0.35, 0.5, 0.6));
+    }
+
+    /**
+     * A material the family does not know better.
+     *
+     * <p>Every block and every item of the game has a material, even the ones nobody has looked
+     * at yet. Rather than pretending to know, this profile says what is true of almost everything:
+     * it is there, it has a mass, and it answers to the earth.
+     */
+    public static MaterialProfile generic(String id) {
+        return new MaterialProfile(id,
+                new PhysicalProperties(1000.0, BLOCK_VOLUME, 1.0, 1.0, 0.2, 0.5, 1500.0,
+                        Temperature.ofKelvin(500.0), Temperature.ofKelvin(900.0), 0.6, 0),
+                new ChemicalProperties(Composition.EMPTY, 0.0, Phase.SOLID, 0.1, 0.0, 0.0, 0.0, 0.0, 0.05, 0.0),
+                new MagicProperties(ElementAffinity.EARTH, 5.0, 0.3, 30.0, 0.5, 0.2, 0.15, 0.1, 0.2));
+    }
+
+    // ---------------------------------------------------------------------
     // the families the magic model needs
     // ---------------------------------------------------------------------
 

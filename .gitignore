@@ -44,3 +44,6 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+### 游戏与工具产生的日志 ###
+logs/
